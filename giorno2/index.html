@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizzatore 3D Avatar</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Nasconde le barre di scorrimento */
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let myModel;
+        let myTexture;
+
+        function preload() {
+            // Carica il modello 3D
+            // Il parametro 'true' normalizza le dimensioni del modello per adattarlo al canvas
+            myModel = loadModel('Avatar.obj', true);
+            
+            // Carica l'immagine della texture
+            myTexture = loadImage('Avatar.jpg');
+        }
+
+        function setup() {
+            // Crea un canvas grande come la finestra in modalità WEBGL (3D)
+            createCanvas(windowWidth, windowHeight, WEBGL);
+        }
+
+        function draw() {
+            // 1. Sfondo Nero
+            background(0);
+
+            // 2. Abilita il controllo con il mouse (clicca e trascina per ruotare)
+            orbitControl();
+
+            // 3. Luci
+            ambientLight(100); // Luce base diffusa
+            directionalLight(255, 255, 255, 0, 0, -1); // Luce frontale
+            
+            // 4. Configurazione Materiale e Modello
+            noStroke(); // Rimuove i bordi dei poligoni (wireframe)
+            texture(myTexture); // Applica la texture caricata (Avatar.jpg)
+            
+            // Correzione rotazione (spesso le scansioni sono capovolte sull'asse Y in WebGL)
+            rotateZ(PI); 
+            rotateY(millis() * 0.0005); // Rotazione automatica lenta (opzionale)
+
+            // 5. Disegna il modello
+            model(myModel);
+        }
+
+        // Ridimensiona il canvas se la finestra viene ridimensionata
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>
