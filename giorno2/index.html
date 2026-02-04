@@ -3,60 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizzatore 3D Avatar</title>
+    <title>Avatar 3D con Scia e Montagne</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Nasconde le barre di scorrimento */
-            background-color: #2fb6f5;
-        }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #000; }
     </style>
 </head>
 <body>
     <script>
         let myModel;
         let myTexture;
+        let bgImage;
+        let history = []; // Array per memorizzare le posizioni passate (la scia)
 
         function preload() {
-            // Carica il modello 3D
-            // Il parametro 'true' normalizza le dimensioni del modello per adattarlo al canvas
             myModel = loadModel('Avatar.obj', true);
-            
-            // Carica l'immagine della texture
             myTexture = loadImage('Avatar.jpg');
+            // Carica un'immagine di montagna (assicurati che il file esista o usa un URL)
+            bgImage = loadImage('https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
         }
 
         function setup() {
-            // Crea un canvas grande come la finestra in modalità WEBGL (3D)
             createCanvas(windowWidth, windowHeight, WEBGL);
         }
 
         function draw() {
-            // 1. Sfondo Nero
-            background(0);
+            // 1. Disegna lo sfondo (immagine di montagna)
+            // Spostiamo l'immagine indietro nello spazio 3D per farla stare dietro l'avatar
+            push();
+            translate(0, 0, -500); 
+            imageMode(CENTER);
+            image(bgImage, 0, 0, width * 2, height * 2); 
+            pop();
 
-            // 2. Abilita il controllo con il mouse (clicca e trascina per ruotare)
-            orbitControl();
+            // 2. Gestione della Scia
+            // Memorizziamo la posizione corrente del mouse
+            let currentPos = {
+                x: mouseX - width / 2,
+                y: mouseY - height / 2,
+                rot: millis() * 0.002
+            };
+            history.push(currentPos);
+
+            // Se l'array è troppo lungo, rimuoviamo il punto più vecchio (lunghezza scia)
+            if (history.length > 10) {
+                history.shift();
+            }
 
             // 3. Luci
-            ambientLight(100); // Luce base diffusa
-            directionalLight(255, 255, 255, 0, 0, -1); // Luce frontale
-            
-            // 4. Configurazione Materiale e Modello
-            noStroke(); // Rimuove i bordi dei poligoni (wireframe)
-            texture(myTexture); // Applica la texture caricata (Avatar.jpg)
-            
-            // Correzione rotazione (spesso le scansioni sono capovolte sull'asse Y in WebGL)
-            rotateZ(PI); 
-            rotateY(millis() * 0.0005); // Rotazione automatica lenta (opzionale)
+            ambientLight(150);
+            directionalLight(255, 255, 255, 0, 0, -1);
 
-            // 5. Disegna il modello
-            model(myModel);
+            // 4. Disegna la scia e l'avatar principale
+            for (let i = 0; i < history.length; i++) {
+                let pos = history[i];
+                
+                // Calcoliamo la trasparenza (più è vecchio, più è trasparente)
+                let opacity = map(i, 0, history.length, 20, 255);
+                
+                push();
+                translate(pos.x, pos.y, 0); // Muovi l'avatar dove si trova il mouse
+                
+                // Applichiamo la rotazione e la texture
+                rotateZ(PI);
+                rotateY(pos.rot);
+                
+                noStroke();
+                texture(myTexture);
+                
+                // Disegna il modello leggermente più piccolo per la scia se vuoi
+                let scaleFactor = map(i, 0, history.length, 0.5, 1);
+                scale(scaleFactor);
+                
+                // Disegna il modello
+                model(myModel);
+                pop();
+            }
         }
 
-        // Ridimensiona il canvas se la finestra viene ridimensionata
         function windowResized() {
             resizeCanvas(windowWidth, windowHeight);
         }

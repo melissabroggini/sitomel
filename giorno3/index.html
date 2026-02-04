@@ -1,12 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="p5.min.js"></script>
+    <title>Swiss Style Explosion - MEL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap');
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #FF0000;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            user-select: none; /* Impedisce la selezione del testo durante il click */
+        }
+
+        .animated-text {
+            font-size: 12vw;
+            font-weight: 900;
+            color: #FFFFFF;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            white-space: nowrap; 
+            display: flex;
+            align-items: baseline;
+            cursor: pointer;
+            z-index: 10; /* Mantiene il testo principale sopra le particelle */
+        }
+
+        .suffix {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease-out;
+            margin-left: 0.02em;
+        }
+
+        .suffix.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stile per le particelle "esplose" */
+        .particle {
+            position: absolute;
+            color: #FFFFFF;
+            font-weight: 900;
+            text-transform: uppercase;
+            pointer-events: none; /* Le particelle non bloccano i click */
+            white-space: nowrap;
+            letter-spacing: -0.05em;
+        }
+    </style>
 </head>
 <body>
-    <script src="sketch.js"> </script>
+
+    <div class="animated-text" id="mainContainer">
+        <span>MEL</span><span id="changingSuffix" class="suffix"></span>
+    </div>
+
+    <script>
+        const suffixes = ["A", "ANINA", "ONE", "ODIA", "ISSA", "OGRANO", "ANCOLIA", "LMA"];
+        const changingSuffix = document.getElementById('changingSuffix');
+        const mainContainer = document.getElementById('mainContainer');
+        let index = 0;
+
+        // Funzione per il cambio parola ciclico
+        function updateText() {
+            changingSuffix.classList.remove('visible');
+            setTimeout(() => {
+                index = Math.floor(Math.random() * suffixes.length);
+                changingSuffix.textContent = suffixes[index];
+                changingSuffix.classList.add('visible');
+            }, 400); 
+        }
+
+        setInterval(updateText, 2500);
+        updateText();
+
+        // Funzione per l'esplosione al click
+        mainContainer.addEventListener('click', (e) => {
+            const currentWord = "MEL" + changingSuffix.textContent;
+            const particleCount = 40; // Numero di piccole versioni da creare
+
+            for (let i = 0; i < particleCount; i++) {
+                createParticle(e.clientX, e.clientY, currentWord);
+            }
+        });
+
+        function createParticle(x, y, text) {
+            const el = document.createElement('div');
+            el.className = 'particle';
+            el.textContent = text;
+            
+            // Dimensione randomizzata ma più piccola (tra 10px e 30px)
+            const size = Math.random() * 20 + 10;
+            el.style.fontSize = `${size}px`;
+            
+            // Posizione iniziale sul cursore
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            
+            document.body.appendChild(el);
+
+            // Calcolo traiettoria casuale
+            const destinationX = (Math.random() - 0.5) * window.innerWidth * 1.5;
+            const destinationY = (Math.random() - 0.5) * window.innerHeight * 1.5;
+            const rotation = (Math.random() - 0.5) * 720; // Rotazione casuale
+
+            // Animazione
+            const animation = el.animate([
+                { transform: `translate(-50%, -50%) translate(0, 0) rotate(0deg)`, opacity: 1 },
+                { transform: `translate(-50%, -50%) translate(${destinationX}px, ${destinationY}px) rotate(${rotation}deg)`, opacity: 0 }
+            ], {
+                duration: Math.random() * 1000 + 1000, // Durata tra 1 e 2 secondi
+                easing: 'cubic-bezier(0, .9, .57, 1)', // Effetto esplosione che rallenta
+                fill: 'forwards'
+            });
+
+            // Rimuovi l'elemento dal DOM quando l'animazione finisce
+            animation.onfinish = () => el.remove();
+        }
+    </script>
 </body>
 </html>

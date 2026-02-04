@@ -3,123 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melissa Broggini</title>
-    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <title>Melissa Broggini - Swiss Red</title>
     <style>
         body {
-            background-color: black;
+            background-color: #FF0000;
             color: white;
             margin: 0;
+            padding: 40px;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            user-select: none;
-            /* Font principale per l'interfaccia */
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        #main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .top-header {
-            position: absolute;
-            top: 40px;
-            width: 100%;
-            text-align: center;
-            font-weight: 300;
-            letter-spacing: 8px;
             font-size: 14px;
+            font-weight: 700;
             text-transform: uppercase;
-            color: #888;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
         }
 
-        /* Contenitore Nome Centrale */
         #name-container {
             display: flex;
-            gap: 0;
-            margin-bottom: 20px; /* Spazio per il Lorem Ipsum */
+            flex-wrap: wrap;
+            align-content: flex-start;
         }
 
         .letter {
-            font-size: clamp(40px, 8vw, 90px);
+            font-size: clamp(50px, 15vw, 180px);
             font-weight: 900;
             text-transform: uppercase;
-            display: inline-block;
-            width: 1.1em;
-            text-align: center;
+            line-height: 0.85;
             position: relative;
+            display: inline-block;
+            
+            /* CORREZIONE SPAZIATURA OMOGENEA */
+            width: 0.75em; 
+            letter-spacing: -0.05em;
+            text-align: center;
         }
 
-        /* Testo descrittivo in Bembo (EB Garamond) */
         .description {
-            font-family: 'EB Garamond', serif; /* Simile al Bembo */
-            font-size: 1.2rem;
-            max-width: 500px;
-            text-align: center;
-            line-height: 1.6;
-            color: #ccc;
-            opacity: 0.9;
-            padding: 0 20px;
+            margin-top: 30px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            font-weight: 500;
+            max-width: 600px;
+            line-height: 1.3;
+        }
+
+        .no-break {
+            white-space: nowrap;
         }
 
         .runaway {
             position: absolute;
             cursor: pointer;
             z-index: 100;
-            transition: transform 0.1s ease-out;
             color: white;
+            /* Mantiene la stessa larghezza delle lettere fisse per non saltare al click */
+            width: 0.75em;
+            text-align: center;
         }
 
         .placeholder {
-            color: #111; 
-            border-bottom: 3px solid #222;
-        }
-
-        .captured {
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
-            pointer-events: none;
+            border-bottom: 8px solid white;
         }
 
         .footer-nav {
-            position: absolute;
-            bottom: 40px;
+            margin-top: auto;
             display: flex;
-            gap: 25px;
+            gap: 20px;
+            border-top: 2px solid white;
+            padding-top: 20px;
         }
 
         .footer-nav a {
-            color: #444;
-            text-decoration: none;
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            transition: color 0.3s;
-        }
-
-        .footer-nav a:hover {
             color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
-    <div class="top-header">Catch me if you can</div>
+    <div id="main-content">
+        <div class="top-header">Catch me if you can</div>
+        
+        <div id="name-container"></div>
 
-    <div id="name-container"></div>
-
-    <p class="description">
-            Seminario  introduzione alla porgrammazione <br>
-            SUPSI SA25/26 <b>
-            </b>Docente: Andrea Gysin
-        </b>   
-    </p>
+        <p class="description">
+            Seminario introduzione <span class="no-break">alla programmazione</span><br>
+            SUPSI SA25/26 <br>
+            Docente: Andrea Gysin
+        </p>
+    </div>
 
     <nav class="footer-nav">
-        <a href="#">Giorno 1</a>
-        <a href="http://127.0.0.1:5500/giorno2/index.html">Giorno 2</a>
-        <a href="#">Giorno 3</a>
-        <a href="#">Giorno 4</a>
-        <a href="#">Giorno 5</a>
+        <a href="http://127.0.0.1:5500/giorno2/index.html">Avatar</a>
+        <a href="http://127.0.0.1:5500/giorno3/index.html">Lettering</a>
     </nav>
 
     <script>
@@ -127,18 +120,18 @@
         const container = document.getElementById('name-container');
         const fugitiveLetters = [];
 
-        nome.split('').forEach((char, index) => {
-            const slot = document.createElement('span');
-            slot.className = 'letter';
-
+        nome.split('').forEach((char) => {
             if (char === " ") {
-                slot.style.width = "0.6em";
-                container.appendChild(slot);
+                const br = document.createElement('div');
+                br.style.width = "100%";
+                container.appendChild(br);
                 return;
             }
 
-            // Scappano alcune lettere specifiche
-            const isFugitive = "MESBGI".includes(char) && Math.random() > 0.4;
+            const slot = document.createElement('span');
+            slot.className = 'letter';
+
+            const isFugitive = "MELISABROGIN".includes(char) && Math.random() > 0.6;
 
             if (isFugitive) {
                 slot.classList.add('placeholder');
@@ -153,7 +146,6 @@
                 runaway.style.top = Math.random() * (window.innerHeight - 100) + "px";
                 
                 runaway.addEventListener('click', () => capture(runaway, slot));
-                
                 document.body.appendChild(runaway);
                 fugitiveLetters.push(runaway);
             } else {
@@ -163,32 +155,17 @@
         });
 
         document.addEventListener('mousemove', (e) => {
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-
             fugitiveLetters.forEach(el => {
                 if (el.classList.contains('captured')) return;
-
                 const rect = el.getBoundingClientRect();
-                const elX = rect.left + rect.width / 2;
-                const elY = rect.top + rect.height / 2;
-
-                const distX = mouseX - elX;
-                const distY = mouseY - elY;
-                const distance = Math.hypot(distX, distY);
-
-                if (distance < 120) {
+                const distX = e.clientX - (rect.left + rect.width / 2);
+                const distY = e.clientY - (rect.top + rect.height / 2);
+                if (Math.hypot(distX, distY) < 150) {
                     const angle = Math.atan2(distY, distX);
-                    const force = 180;
-
-                    let newX = elX - Math.cos(angle) * force;
-                    let newY = elY - Math.sin(angle) * force;
-
-                    newX = Math.max(40, Math.min(window.innerWidth - 80, newX));
-                    newY = Math.max(40, Math.min(window.innerHeight - 80, newY));
-
-                    el.style.left = (newX - rect.width / 2) + "px";
-                    el.style.top = (newY - rect.height / 2) + "px";
+                    let newX = rect.left - Math.cos(angle) * 150;
+                    let newY = rect.top - Math.sin(angle) * 150;
+                    el.style.left = Math.max(10, Math.min(window.innerWidth - 80, newX)) + "px";
+                    el.style.top = Math.max(10, Math.min(window.innerHeight - 80, newY)) + "px";
                 }
             });
         });
@@ -196,10 +173,8 @@
         function capture(el, targetSlot) {
             el.classList.add('captured');
             const targetRect = targetSlot.getBoundingClientRect();
-            
             el.style.left = targetRect.left + "px";
             el.style.top = targetRect.top + "px";
-
             setTimeout(() => {
                 targetSlot.innerText = el.innerText;
                 targetSlot.classList.remove('placeholder');
