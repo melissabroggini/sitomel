@@ -3,79 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avatar 3D con Scia e Montagne</title>
+    <title>Avatar 3D - Fuga dal Mouse</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <style>
-        body { margin: 0; padding: 0; overflow: hidden; background-color: #000; }
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #FF0000; }
     </style>
 </head>
 <body>
     <script>
         let myModel;
         let myTexture;
-        let bgImage;
-        let history = []; // Array per memorizzare le posizioni passate (la scia)
+        let avatars = []; // Array che conterrà tutti i nostri avatar
+        let numAvatars = 15; // Puoi cambiare questo numero per averne di più o di meno
 
         function preload() {
             myModel = loadModel('Avatar.obj', true);
             myTexture = loadImage('Avatar.jpg');
-            // Carica un'immagine di montagna (assicurati che il file esista o usa un URL)
-            bgImage = loadImage('https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
         }
 
         function setup() {
             createCanvas(windowWidth, windowHeight, WEBGL);
+            // Creiamo gli avatar all'inizio
+            for (let i = 0; i < numAvatars; i++) {
+                avatars.push(new Avatar());
+            }
         }
 
         function draw() {
-            // 1. Disegna lo sfondo (immagine di montagna)
-            // Spostiamo l'immagine indietro nello spazio 3D per farla stare dietro l'avatar
-            push();
-            translate(0, 0, -500); 
-            imageMode(CENTER);
-            image(bgImage, 0, 0, width * 2, height * 2); 
-            pop();
+            background('#FF0000');
 
-            // 2. Gestione della Scia
-            // Memorizziamo la posizione corrente del mouse
-            let currentPos = {
-                x: mouseX - width / 2,
-                y: mouseY - height / 2,
-                rot: millis() * 0.002
-            };
-            history.push(currentPos);
-
-            // Se l'array è troppo lungo, rimuoviamo il punto più vecchio (lunghezza scia)
-            if (history.length > 10) {
-                history.shift();
-            }
-
-            // 3. Luci
+            // Luci
             ambientLight(150);
             directionalLight(255, 255, 255, 0, 0, -1);
 
-            // 4. Disegna la scia e l'avatar principale
-            for (let i = 0; i < history.length; i++) {
-                let pos = history[i];
+            // Gestione di ogni singolo avatar
+            for (let a of avatars) {
+                a.update();
+                a.display();
+            }
+        }
+
+        class Avatar {
+            constructor() {
+                // Posizione casuale iniziale
+                this.pos = createVector(random(-width/2, width/2), random(-height/2, height/2));
+                // Velocità casuale
+                this.vel = p5.Vector.random2D().mult(random(1, 3));
+                // Dimensione casuale
+                this.size = random(0.3, 1.2);
+                // Rotazione individuale
+                this.rot = random(TWO_PI);
+            }
+
+            update() {
+                // Calcoliamo la posizione del mouse nel sistema WEBGL
+                let mouseV = createVector(mouseX - width / 2, mouseY - height / 2);
                 
-                // Calcoliamo la trasparenza (più è vecchio, più è trasparente)
-                let opacity = map(i, 0, history.length, 20, 255);
-                
+                // Calcoliamo la distanza tra l'avatar e il mouse
+                let d = dist(this.pos.x, this.pos.y, mouseV.x, mouseV.y);
+
+                // LOGICA DI FUGA: se il mouse è vicino (meno di 200 pixel)
+                if (d < 200) {
+                    let flee = p5.Vector.sub(this.pos, mouseV); // Crea un vettore che punta lontano dal mouse
+                    flee.setMag(5); // Forza della fuga
+                    this.vel.lerp(flee, 0.1); // Applica la forza gradualmente
+                }
+
+                // Muovi l'avatar
+                this.pos.add(this.vel);
+                this.rot += 0.02;
+
+                // Rimbalzo sui bordi per non perderli
+                if (this.pos.x > width/2 || this.pos.x < -width/2) this.vel.x *= -1;
+                if (this.pos.y > height/2 || this.pos.y < -height/2) this.vel.y *= -1;
+            }
+
+            display() {
                 push();
-                translate(pos.x, pos.y, 0); // Muovi l'avatar dove si trova il mouse
-                
-                // Applichiamo la rotazione e la texture
+                translate(this.pos.x, this.pos.y, 0);
                 rotateZ(PI);
-                rotateY(pos.rot);
-                
-                noStroke();
+                rotateY(this.rot);
+                scale(this.size);
                 texture(myTexture);
-                
-                // Disegna il modello leggermente più piccolo per la scia se vuoi
-                let scaleFactor = map(i, 0, history.length, 0.5, 1);
-                scale(scaleFactor);
-                
-                // Disegna il modello
+                noStroke();
                 model(myModel);
                 pop();
             }
