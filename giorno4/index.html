@@ -3,102 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Music Data Analysis</title>
+    <title>Apple Music Analytics - No BTS</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --swiss-red: #DA291C;
             --swiss-white: #FFFFFF;
             --swiss-black: #000000;
-            --swiss-grey: #F0F0F0;
         }
 
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            background-color: var(--swiss-white);
-            color: var(--swiss-black);
+            background-color: var(--swiss-red);
+            color: var(--swiss-white);
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Swiss Style Grid & Typography */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
 
         header {
-            border-bottom: 8px solid var(--swiss-red);
-            padding-bottom: 20px;
-            margin-bottom: 60px;
+            border-bottom: 6px solid var(--swiss-white);
+            padding-bottom: 30px;
+            margin-bottom: 80px;
         }
 
         h1 {
-            font-size: 80px;
+            font-size: 100px;
             font-weight: 700;
-            line-height: 0.9;
-            letter-spacing: -2px;
+            line-height: 0.85;
+            letter-spacing: -3px;
             margin: 0;
             text-transform: uppercase;
         }
 
         h2 {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             text-transform: uppercase;
-            margin-bottom: 20px;
-            border-left: 5px solid var(--swiss-red);
-            padding-left: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--swiss-white);
+            padding-bottom: 10px;
+            letter-spacing: 1px;
+            display: inline-block;
         }
 
-        /* KPI Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 40px;
-            margin-bottom: 80px;
+            margin-bottom: 100px;
         }
 
         .stat-card {
-            background: var(--swiss-grey);
+            background: rgba(255, 255, 255, 0.1);
             padding: 30px;
-            transition: transform 0.3s ease;
+            border: 1px solid var(--swiss-white);
+            transition: background 0.3s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            background: var(--swiss-red);
-            color: var(--swiss-white);
+            background: var(--swiss-white);
+            color: var(--swiss-red);
+            cursor: default;
         }
 
         .stat-number {
-            font-size: 60px;
+            font-size: 70px;
             font-weight: 700;
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             letter-spacing: -2px;
+            line-height: 1;
         }
 
         .stat-label {
             font-size: 14px;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 500;
             letter-spacing: 1px;
+            opacity: 0.9;
         }
 
-        /* Charts Layout */
         .charts-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            margin-bottom: 60px;
+            gap: 80px;
+            margin-bottom: 80px;
+        }
+
+        .chart-wrapper {
+            margin-bottom: 20px;
         }
 
         .chart-container {
             position: relative;
-            height: 400px;
+            height: 350px;
             width: 100%;
         }
 
@@ -109,16 +115,17 @@
         footer {
             margin-top: 100px;
             padding-top: 20px;
-            border-top: 2px solid var(--swiss-black);
+            border-top: 1px solid rgba(255,255,255,0.4);
             font-size: 12px;
             text-transform: uppercase;
             display: flex;
             justify-content: space-between;
+            opacity: 0.8;
         }
 
         @media (max-width: 768px) {
-            h1 { font-size: 50px; }
-            .charts-section { grid-template-columns: 1fr; }
+            h1 { font-size: 60px; }
+            .charts-section { grid-template-columns: 1fr; gap: 40px; }
         }
     </style>
 </head>
@@ -126,20 +133,20 @@
 
     <div class="container">
         <header>
-            <h1>Music<br>Data<br>Analysis</h1>
+            <h1>My Music<br>Analytics.</h1>
         </header>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <span class="stat-number">4208</span>
+                <span class="stat-number">3.971</span>
                 <span class="stat-label">Brani Totali</span>
             </div>
             <div class="stat-card">
-                <span class="stat-number">247h</span>
+                <span class="stat-number">233<small style="font-size: 30px">h</small></span>
                 <span class="stat-label">Ore di Ascolto</span>
             </div>
             <div class="stat-card">
-                <span class="stat-number">1909</span>
+                <span class="stat-number">1.908</span>
                 <span class="stat-label">Artisti Unici</span>
             </div>
         </div>
@@ -170,38 +177,37 @@
         </div>
 
         <footer>
-            <span>Generated from User Data</span>
-            <span>Swiss Style Analytics</span>
+            <span>Data Source: Apple Music (Filtered)</span>
+            <span>Generated: 2024</span>
         </footer>
     </div>
 
     <script>
-        // Configurazione Globale Font
+        // Configurazione Chart.js
         Chart.defaults.font.family = "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif";
-        Chart.defaults.color = '#000000';
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#FFFFFF'; 
         
-        // Colori
-        const swissRed = '#DA291C';
-        const swissBlack = '#000000';
-        const swissGrey = '#E0E0E0';
+        const whiteColor = '#FFFFFF';
+        const translucentWhite = 'rgba(255, 255, 255, 0.2)';
 
-        // DATI PRE-CALCOLATI (Inseriti dinamicamente)
+        // NUOVI DATI (SENZA BTS)
         const artistsData = {
-            labels: ['BTS', 'ONE OK ROCK', 'Lana Del Rey', 'Ariana Grande', 'Rafael Krux', 'Billie Eilish', 'Stray Kids', 'Hiroyuki Sawano'],
-            data: [237, 133, 110, 103, 78, 64, 36, 32]
+            labels: ['ONE OK ROCK', 'Lana Del Rey', 'Ariana Grande', 'Rafael Krux', 'Billie Eilish', 'Stray Kids', 'Hiroyuki Sawano', 'TWICE'],
+            data: [133, 110, 103, 78, 64, 36, 32, 31]
         };
 
         const albumsData = {
-            labels: ['Proof', 'Born to Die', 'Love Yourself 結', 'Happier Than Ever', 'MAP OF THE SOUL: 7', 'Positions', '50 Greatest Classical', 'You Never Walk Alone'],
-            data: [34, 24, 23, 20, 20, 19, 17, 17]
+            labels: ['Born to Die', 'Happier Than Ever', 'Positions', '50 Greatest Classical', 'AoT Season 2 OST', 'Luxury Disease', 'Sweetener', 'My Everything'],
+            data: [24, 20, 19, 17, 16, 15, 15, 15]
         };
 
         const durationData = {
             labels: ['Brevi (<3m)', 'Medie (3-5m)', 'Lunghe (>5m)'],
-            data: [1283, 2606, 305]
+            data: [1254, 2413, 304]
         };
 
-        // 1. Chart Artisti (Bar)
+        // 1. Chart Artisti
         new Chart(document.getElementById('artistsChart'), {
             type: 'bar',
             data: {
@@ -209,45 +215,51 @@
                 datasets: [{
                     label: 'Numero Brani',
                     data: artistsData.data,
-                    backgroundColor: swissRed,
-                    barPercentage: 0.6
+                    backgroundColor: whiteColor,
+                    barPercentage: 0.7,
+                    borderRadius: 2
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: swissGrey } },
-                    x: { grid: { display: false } }
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: translucentWhite, borderDash: [5, 5] },
+                        ticks: { color: whiteColor }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { color: whiteColor, autoSkip: false, maxRotation: 45, minRotation: 45 }
+                    }
                 }
             }
         });
 
-        // 2. Chart Durata (Doughnut)
+        // 2. Chart Durata
         new Chart(document.getElementById('durationChart'), {
             type: 'doughnut',
             data: {
                 labels: durationData.labels,
                 datasets: [{
                     data: durationData.data,
-                    backgroundColor: [swissGrey, swissRed, swissBlack],
+                    backgroundColor: [whiteColor, 'rgba(255,255,255, 0.6)', 'rgba(255,255,255, 0.3)'],
                     borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '60%',
+                cutout: '70%',
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
                 }
             }
         });
 
-        // 3. Chart Album (Bar Orizzontale)
+        // 3. Chart Album
         new Chart(document.getElementById('albumsChart'), {
             type: 'bar',
             data: {
@@ -255,20 +267,26 @@
                 datasets: [{
                     label: 'Brani per Album',
                     data: albumsData.data,
-                    backgroundColor: swissBlack,
-                    barPercentage: 0.5
+                    backgroundColor: whiteColor,
+                    barPercentage: 0.5,
+                    borderRadius: 2
                 }]
             },
             options: {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
-                    x: { beginAtZero: true, grid: { color: swissGrey } },
-                    y: { grid: { display: false } }
+                    x: { 
+                        beginAtZero: true, 
+                        grid: { color: translucentWhite, borderDash: [5, 5] },
+                        ticks: { color: whiteColor }
+                    },
+                    y: { 
+                        grid: { display: false },
+                        ticks: { color: whiteColor }
+                    }
                 }
             }
         });
