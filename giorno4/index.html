@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Music Data Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --swiss-red: #DA291C;
+            --swiss-white: #FFFFFF;
+            --swiss-black: #000000;
+            --swiss-grey: #F0F0F0;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--swiss-white);
+            color: var(--swiss-black);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Swiss Style Grid & Typography */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            border-bottom: 8px solid var(--swiss-red);
+            padding-bottom: 20px;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 80px;
+            font-weight: 700;
+            line-height: 0.9;
+            letter-spacing: -2px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--swiss-red);
+            padding-left: 15px;
+        }
+
+        /* KPI Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+
+        .stat-card {
+            background: var(--swiss-grey);
+            padding: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: var(--swiss-red);
+            color: var(--swiss-white);
+        }
+
+        .stat-number {
+            font-size: 60px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Charts Layout */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        footer {
+            margin-top: 100px;
+            padding-top: 20px;
+            border-top: 2px solid var(--swiss-black);
+            font-size: 12px;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 50px; }
+            .charts-section { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Music<br>Data<br>Analysis</h1>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">4208</span>
+                <span class="stat-label">Brani Totali</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">247h</span>
+                <span class="stat-label">Ore di Ascolto</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">1909</span>
+                <span class="stat-label">Artisti Unici</span>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            
+            <div class="chart-wrapper">
+                <h2>Top 8 Artisti</h2>
+                <div class="chart-container">
+                    <canvas id="artistsChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <h2>Durata Brani</h2>
+                <div class="chart-container">
+                    <canvas id="durationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-wrapper full-width">
+                <h2>Top 8 Album</h2>
+                <div class="chart-container">
+                    <canvas id="albumsChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <span>Generated from User Data</span>
+            <span>Swiss Style Analytics</span>
+        </footer>
+    </div>
+
+    <script>
+        // Configurazione Globale Font
+        Chart.defaults.font.family = "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif";
+        Chart.defaults.color = '#000000';
+        
+        // Colori
+        const swissRed = '#DA291C';
+        const swissBlack = '#000000';
+        const swissGrey = '#E0E0E0';
+
+        // DATI PRE-CALCOLATI (Inseriti dinamicamente)
+        const artistsData = {
+            labels: ['BTS', 'ONE OK ROCK', 'Lana Del Rey', 'Ariana Grande', 'Rafael Krux', 'Billie Eilish', 'Stray Kids', 'Hiroyuki Sawano'],
+            data: [237, 133, 110, 103, 78, 64, 36, 32]
+        };
+
+        const albumsData = {
+            labels: ['Proof', 'Born to Die', 'Love Yourself 結', 'Happier Than Ever', 'MAP OF THE SOUL: 7', 'Positions', '50 Greatest Classical', 'You Never Walk Alone'],
+            data: [34, 24, 23, 20, 20, 19, 17, 17]
+        };
+
+        const durationData = {
+            labels: ['Brevi (<3m)', 'Medie (3-5m)', 'Lunghe (>5m)'],
+            data: [1283, 2606, 305]
+        };
+
+        // 1. Chart Artisti (Bar)
+        new Chart(document.getElementById('artistsChart'), {
+            type: 'bar',
+            data: {
+                labels: artistsData.labels,
+                datasets: [{
+                    label: 'Numero Brani',
+                    data: artistsData.data,
+                    backgroundColor: swissRed,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: swissGrey } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. Chart Durata (Doughnut)
+        new Chart(document.getElementById('durationChart'), {
+            type: 'doughnut',
+            data: {
+                labels: durationData.labels,
+                datasets: [{
+                    data: durationData.data,
+                    backgroundColor: [swissGrey, swissRed, swissBlack],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // 3. Chart Album (Bar Orizzontale)
+        new Chart(document.getElementById('albumsChart'), {
+            type: 'bar',
+            data: {
+                labels: albumsData.labels,
+                datasets: [{
+                    label: 'Brani per Album',
+                    data: albumsData.data,
+                    backgroundColor: swissBlack,
+                    barPercentage: 0.5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { beginAtZero: true, grid: { color: swissGrey } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
